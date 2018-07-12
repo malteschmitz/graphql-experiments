@@ -1,6 +1,6 @@
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const graphqlTools = require('graphql-tools');
+const { buildSchema } = require('graphql')
 
 let data = require('./todos.json');
 
@@ -8,7 +8,7 @@ function byId(id) {
   return data.find((todo) => todo.id === id);
 }
 
-const schema = `
+const schema = buildSchema(`
   type Query {
     hello: String
     todos(first: Int, offset: Int): [Todo]!
@@ -30,7 +30,7 @@ const schema = `
   type Mutation {
     done(id: Int!): DoneResult!
   }
-`;
+`);
 
 const root = {
   hello: () => {
@@ -45,38 +45,19 @@ const root = {
     const todo = byId(id)
     if (todo) {
       todo.done = true;
-      return todo;
+      return {...todo, __typename: "Todo"};
     } else {
       return {
+        __typename: "Error",
         message: `There is no todo with the ID ${id}.`
       };
     }
   }
 };
 
-const resolvers = {
-  DoneResult: {
-    __resolveType(obj, context, info){
-      if (obj.message) {
-        return 'Error';
-      } else {
-        return 'Todo';
-      }
-    },
-  },
-};
-
 var app = express();
-// app.use('/graphql', graphqlHTTP({
-//   schema: schema,
-//   rootValue: root,
-//   graphiql: true,
-// }));
 app.use('/graphql', graphqlHTTP({
-  schema: graphqlTools.makeExecutableSchema({
-    typeDefs: schema,
-    resolvers: resolvers
-  }),
+  schema: schema,
   rootValue: root,
   graphiql: true,
 }));
