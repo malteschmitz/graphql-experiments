@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Hallo",
+    "text": "Wir brauchen ein Hallo",
+    "done": false
+  },
+  {
+    "id": 2,
+    "title": "Welt",
+    "text": "Die Welt muss ganz neu",
+    "done": false
+  },
+  {
+    "id": 3,
+    "title": "Erledigt",
+    "text": "Ich bin schon durch",
+    "done": true
+  }
+]
